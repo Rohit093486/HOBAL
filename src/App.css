@@ -1,0 +1,17 @@
+.MuiDrawer-paper{
+  width: 500px !important;
+}
+
+.MuiGrid-direction-xs-column{
+  display: block !important;
+  width: 100% !important; 
+  height: 100% !important;
+  padding: 15px !important;
+}
+
+.MuiBackdrop-root{
+  background: none !important;
+}
+.MuiOutlinedInput-root{
+  border-radius: 50px !important;
+}
