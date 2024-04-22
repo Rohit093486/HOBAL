@@ -6,7 +6,7 @@ import './App.css';
 import axios from "axios";
 
 function App() {
-  const [drawerOpen, setDrawerOpen] = useState(true);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   // const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([])
 
