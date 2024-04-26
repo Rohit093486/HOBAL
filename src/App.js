@@ -1,41 +1,61 @@
 import React, { useEffect, useState } from "react";
-import { Avatar, Drawer, IconButton, List, ListItem, ListItemAvatar, ListItemText, TextField } from "@mui/material";
-import { ChatBox, ReceiverMessage, SenderMessage } from "mui-chat-box";
-// import SendIcon from '@mui/icons-material/Send';
+import { Avatar,  Drawer, Grid } from "@mui/material";
+import { ChatBox, ReceiverMessage} from "mui-chat-box";
 import './App.css';
 import axios from "axios";
 
+const boxShadowStyle = {
+  boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)', // Adjust as needed
+  padding: '10px', // Adding padding for aesthetic purposes
+};
+
 function App() {
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(true);
   // const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([])
-
+  const [customerMessage, setCustomerMessage] = useState([])
 
   const botSender = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/copilot_feedback/1');
-      console.log('API response:', response.data);
-      setMessages(response.data)
+      const response = await axios.get(
+        "http://localhost:5000/copilot_feedback/1"
+      );
+      console.log("API response:", response.data);
+      setMessages(response.data);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
     }
+    setTimeout(botSender, 3000);
+  };
+
+  const customerSender = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:5000/copilot_feedback/2"
+      );
+      console.log("API response:", response.data);
+      setCustomerMessage(response.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+    setTimeout(customerSender, 15000);
   };
 
   useEffect(() => {
-
     fetchTime()
   }, [])
   const fetchTime = async () => {
     try {
       const response = await axios.get('http://localhost:5000/launch_copilot');
       setDrawerOpen(true);
+      botSender();
+      customerSender();
       console.log('API response:', response.data);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
   };
   // Call checkTime every second to check if the current time matches
-  setInterval(botSender, 5000);
 
   // const handleMessageChange = (event) => {
   //   setMessage(event.target.value);
@@ -49,18 +69,35 @@ function App() {
   // };
 
   return (
-    <Drawer anchor="right" open={drawerOpen} >
+    // <Drawer anchor="right" open={drawerOpen} >
+    <>
       <h2 style={{ padding: '2px 15px' }}>HoABL Copilot</h2>
-      <ChatBox>
-        {messages?.map((msg, index) => (
-          <React.Fragment key={index}>          
-              <ReceiverMessage avatar={<Avatar sx={{ background: 'blue' }}>AF</Avatar>}>
-                {msg}
-              </ReceiverMessage>          
-          </React.Fragment>
-        ))}
-      </ChatBox>     
-    </Drawer>
+      <Grid sx={{height:'100%'}} container spacing={2} columns={16}>
+        <Grid item xs={8} style={boxShadowStyle}>
+          <ChatBox>
+            {messages?.map((msg, index) => (
+              <React.Fragment key={index}>
+                <ReceiverMessage avatar={<Avatar sx={{ background: 'blue' }}>AF</Avatar>}>
+                  {msg}
+                </ReceiverMessage>
+              </React.Fragment>
+            ))}
+          </ChatBox>
+        </Grid>
+        <Grid item xs={8} style={boxShadowStyle}>
+          <ChatBox>
+            {customerMessage?.map((msg, index) => (
+              <React.Fragment key={index}>
+                <ReceiverMessage avatar={<Avatar sx={{ background: 'blue' }}>SF</Avatar>}>
+                  {msg}
+                </ReceiverMessage>
+              </React.Fragment>
+            ))}
+          </ChatBox>
+        </Grid>
+      </Grid>
+      </>
+    // </Drawer>
   );
 }
 
