@@ -9,6 +9,15 @@ const boxShadowStyle = {
   padding: '10px', // Adding padding for aesthetic purposes
 };
 
+const splitTextIntoLines = (text) => {
+  const lines = text.split('\n');
+  return lines.map((line, index) => (
+    <React.Fragment key={index}>
+      {line}
+      {index < lines.length - 1 && <br />} {/* Add a line break except for the last line */}
+    </React.Fragment>
+  ));
+};
 function App() {
   const [drawerOpen, setDrawerOpen] = useState(true);
   // const [message, setMessage] = useState('');
@@ -78,7 +87,8 @@ function App() {
             {messages?.map((msg, index) => (
               <React.Fragment key={index}>
                 <ReceiverMessage avatar={<Avatar sx={{ background: 'blue' }}>AF</Avatar>}>
-                  {msg}
+                {splitTextIntoLines(msg)}
+
                 </ReceiverMessage>
               </React.Fragment>
             ))}
@@ -89,7 +99,8 @@ function App() {
             {customerMessage?.map((msg, index) => (
               <React.Fragment key={index}>
                 <ReceiverMessage avatar={<Avatar sx={{ background: 'blue' }}>SF</Avatar>}>
-                  {msg}
+                {splitTextIntoLines(msg)}
+
                 </ReceiverMessage>
               </React.Fragment>
             ))}
