@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import { Avatar, Grid } from "@mui/material";
 import { ChatBox, ReceiverMessage } from "mui-chat-box";
@@ -10,26 +11,39 @@ const boxShadowStyle = {
 };
 
 const getColorForSentiment = (line) => {
+  const res = `<span style="color: {color}">{param}</span>`;
   if (line.includes("Customer Sentiment")) {
-    if (line.includes("Not Interested") || line.includes("Confused")) {
-      return '#ffcc00';
+    if (line.includes("Neutral") || line.includes("Confused")) {
+      return line.replaceAll(line.includes("Neutral") ? "Neutral" : "Confused", res.replace('{color}', '#ffcc00').replace('{param}', line.includes("Neutral") ? "Neutral" : "Confused"));
     } else if (line.includes("Angry")) {
-      return 'red';
+      return line.replaceAll("Angry", res.replace('{color}', 'red').replace('{param}', 'Angry'));
     } else if (line.includes("Interested")) {
-      return 'green';
+      return line.replaceAll("Interested", res.replace('{color}', 'green').replace('{param}', 'Interested'));
     }
   }
-  return 'inherit'; // Default color if no specific sentiment keyword
+  if (line.includes("Sales Clarity")) {
+    if (line.includes("Neutral")) {
+      return line.replaceAll("Neutral", res.replace('{color}', '#ffcc00').replace('{param}', 'Neutral'));
+    } else if (line.includes("Bad")) {
+      return line.replaceAll("Bad", res.replace('{color}', 'red').replace('{param}', 'Bad'));
+    } else if (line.includes("Good")) {
+      return line.replaceAll("Good", res.replace('{color}', 'green').replace('{param}', 'Good'));
+    }
+  }
+  return line; // Default color if no specific sentiment keyword
 };
 
 const splitTextIntoLines = (text) => {
   const lines = text.split('\n');
   return lines.map((line, index) => {
-    const color = getColorForSentiment(line);
-    const fontWeight = color === 'inherit' ? 'normal' : 'bold';
     return (
       <React.Fragment key={index}>
-        <span style={{ color: color, fontWeight: fontWeight }}>{line}</span>
+        <span
+          style={{}}
+          dangerouslySetInnerHTML={{
+            __html: getColorForSentiment(line),
+          }}
+        ></span>
         {index < lines.length - 1 && <br />}
       </React.Fragment>
     );
@@ -39,7 +53,6 @@ const splitTextIntoLines = (text) => {
 function App() {
   const [messages, setMessages] = useState([]);
   const [customerMessage, setCustomerMessage] = useState([]);
-
   const botSender = async () => {
     try {
       const response = await axios.get("http://localhost:5000/copilot_feedback/1");
